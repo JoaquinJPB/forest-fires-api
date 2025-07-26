@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { TotalPaginated, Fire } from "../types/fireTypes";
+import { TotalPaginated, Fire, FilteredFieldsEnum } from "../types/fireTypes";
 import { DatasetResponse, fetchTyped, ResponseTyped } from "../utils/fetchTyped";
 import { getTwoYearsAgoDate } from "../utils/helpers/dateHelper";
 
@@ -10,15 +10,16 @@ type GetPaginatedFiresResponse = Promise<ResponseTyped<TotalPaginated<Fire>>>;
 export class FireService {
   constructor(private fastify: FastifyInstance) {}
 
-  async getPaginatedFires(page: number, limit: number): GetPaginatedFiresResponse {
+  private async fetchPaginatedFires(
+    page: number,
+    limit: number,
+    whereConditions: string[]
+  ): GetPaginatedFiresResponse {
     const offset = (page - 1) * limit;
-    const startDate = getTwoYearsAgoDate();
-
-    // Build API URL
     const params = new URLSearchParams();
     params.append("limit", `${limit}`);
     params.append("offset", `${offset}`);
-    params.append("where", `fecha_de_inicio>='${startDate}'`);
+    params.append("where", whereConditions.join(" and "));
     params.append("order_by", `fecha_de_inicio DESC`);
 
     const response = await fetchTyped<DatasetResponse<Fire[]>>(`${API_BASE_URL}?${params}`);
@@ -44,5 +45,22 @@ export class FireService {
     }
 
     return response;
+  }
+
+  async getPaginatedFires(page: number, limit: number): GetPaginatedFiresResponse {
+    const startDate = getTwoYearsAgoDate();
+    const whereConditions = [`fecha_de_inicio>='${startDate}'`];
+    return this.fetchPaginatedFires(page, limit, whereConditions);
+  }
+
+  async getFilteredPaginatedFires(page: number, limit: number, filters: Record<FilteredFieldsEnum, string>): GetPaginatedFiresResponse {
+    const startDate = getTwoYearsAgoDate();
+    const whereConditions = [`fecha_de_inicio>='${startDate}'`];
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        whereConditions.push(`${key}='${value}'`);
+      }
+    });
+    return this.fetchPaginatedFires(page, limit, whereConditions);
   }
 }

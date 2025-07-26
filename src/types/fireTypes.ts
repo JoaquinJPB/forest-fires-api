@@ -26,3 +26,10 @@ export interface TotalPaginated<T> {
   total_pages: number;
   total: number;
 }
+
+export enum FilteredFieldsEnum {
+  PROVINCE = "provincia",
+  PROBABLE_CAUSE = "causa_probable",
+  CURRENT_STATUS = "situacion_actual",
+  MAXIMUM_LEVEL = "nivel_maximo_alcanzado",
+}
