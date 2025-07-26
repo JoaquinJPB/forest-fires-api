@@ -1,47 +1,48 @@
 import { FastifyInstance } from "fastify";
 import { TotalPaginated, Fire } from "../types/fireTypes";
-import {
-    DatasetResponse,
-    fetchTyped,
-    ResponseTyped,
-} from "../utils/fetchTyped";
+import { DatasetResponse, fetchTyped, ResponseTyped } from "../utils/fetchTyped";
 import { getTwoYearsAgoDate } from "../utils/helpers/dateHelper";
 
-const API_BASE_URL =
-    "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/incendios-forestales/records";
+const API_BASE_URL = "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/incendios-forestales/records";
 
 type GetPaginatedFiresResponse = Promise<ResponseTyped<TotalPaginated<Fire>>>;
 
 export class FireService {
-    constructor(private fastify: FastifyInstance) {}
+  constructor(private fastify: FastifyInstance) {}
 
-    async getPaginatedFires(
-        page: number = 1,
-        page_size: number = 10
-    ): GetPaginatedFiresResponse {
-        const limit = page_size;
-        const offset = (page - 1) * page_size;
-        const startDate = getTwoYearsAgoDate();
+  async getPaginatedFires(page: number, limit: number): GetPaginatedFiresResponse {
+    const offset = (page - 1) * limit;
+    const startDate = getTwoYearsAgoDate();
 
-        // Build API URL
-        const url = `${API_BASE_URL}?limit=${limit}&offset=${offset}`;
-        const response = await fetchTyped<DatasetResponse<Fire[]>>(url);
+    // Build API URL
+    const params = new URLSearchParams();
+    params.append("limit", `${limit}`);
+    params.append("offset", `${offset}`);
+    params.append("where", `fecha_de_inicio>='${startDate}'`);
+    params.append("order_by", `fecha_de_inicio DESC`);
 
-        if (response.success) {
-            const paginatedResponse: TotalPaginated<Fire> = {
-                page,
-                page_size: limit,
-                results: [...response.data.results],
-                total: limit,
-            };
+    const response = await fetchTyped<DatasetResponse<Fire[]>>(`${API_BASE_URL}?${params}`);
 
-            return {
-                code: response.code,
-                success: response.success,
-                data: paginatedResponse,
-            };
-        }
+    if (response.success) {
+      const totalRecords = response.data.total_count;
+      const totalPages = Math.ceil(totalRecords / limit);
+      const currentPageCount = response.data.results.length;
 
-        return response;
+      const paginatedResponse: TotalPaginated<Fire> = {
+        page,
+        page_size: limit,
+        total_current_page: currentPageCount,
+        results: [...response.data.results],
+        total_pages: totalPages,
+        total: totalRecords,
+      };
+
+      return {
+        ...response,
+        data: paginatedResponse,
+      };
     }
+
+    return response;
+  }
 }
