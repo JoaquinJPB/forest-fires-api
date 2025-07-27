@@ -41,8 +41,10 @@ describe("ConfigurationService", () => {
     });
 
     it("throws error if userId is invalid", async () => {
-      // @ts-expect-error: testing invalid input
-      await expect(service.saveConfiguration({ userId: "42", province: "LEÓN" })).rejects.toThrow("userId is required and must be a number");
+      const userId = "invalid" as unknown as number;
+      await expect(service.saveConfiguration({ userId, province: "LEÓN" })).rejects.toThrow(
+        "userId is required and must be a number"
+      );
     });
   });
 
