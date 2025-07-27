@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { prisma } from "../prisma";
+import { ConfigurationService } from "../services/configurationService";
 
 export default async function configurationsRoutes(fastify: FastifyInstance) {
+  const configurationService = new ConfigurationService();
   fastify.post("/api/configurations", async (request, reply) => {
     const config = request.body as {
       userId: number;
@@ -11,11 +12,7 @@ export default async function configurationsRoutes(fastify: FastifyInstance) {
       severity?: string;
     };
 
-    if (!config.userId) {
-      return reply.status(400).send({ error: "userId is required" });
-    }
-
-    const saved = await prisma.filterConfiguration.create({ data: config });
+    const saved = await configurationService.saveConfiguration(config);
     return reply.send(saved);
   });
 
@@ -59,15 +56,7 @@ export default async function configurationsRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       const { userId } = request.params;
-
-      const configs = await prisma.filterConfiguration.findMany({
-        where: { userId },
-      });
-
-      if (configs.length === 0) {
-        return reply.status(404).send({ error: "No configurations found" });
-      }
-
+      const configs = await configurationService.getConfigurationsByUserId(userId);
       return reply.send(configs);
     }
   );
