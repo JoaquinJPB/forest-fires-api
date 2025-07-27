@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { TotalPaginated, Fire, FilteredFieldsEnum } from "../types/fireTypes";
+import { TotalPaginated, Fire, FilteredFieldsEnum, FireNearby } from "../types/fireTypes";
 import { DatasetResponse, fetchTyped, ResponseTyped } from "../utils/fetchTyped";
 import { getTwoYearsAgoDate } from "../utils/helpers/dateHelper";
+import { haversineDistanceKm } from "../utils/helpers/haversineHelper";
 
 const API_BASE_URL = "https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/incendios-forestales/records";
 
@@ -63,8 +64,28 @@ export class FireService {
   async getNearbyFires(radius: number, lat: number, lon: number, page: number, limit: number): GetPaginatedFiresResponse {
     const startDate = getTwoYearsAgoDate();
     const radiusInMeters = radius * 1000;
-
     const whereConditions = [`fecha_de_inicio>='${startDate}'`, `within_distance(posicion, geom'POINT(${lon} ${lat})', ${radiusInMeters})`];
-    return this.fetchPaginatedFires(page, limit, whereConditions);
+
+    const paginatedFiresResponse = await this.fetchPaginatedFires(page, limit, whereConditions);
+
+    if (!paginatedFiresResponse.success) {
+      return paginatedFiresResponse;
+    }
+
+    const nearbyFires: FireNearby[] = paginatedFiresResponse.data.results.map((fire) => ({
+      ...fire,
+      distancia_desde_origen: {
+        type: "km",
+        value: haversineDistanceKm(lat, lon, fire.posicion.lat, fire.posicion.lon),
+      },
+    }));
+
+    return {
+      ...paginatedFiresResponse,
+      data: {
+        ...paginatedFiresResponse.data,
+        results: nearbyFires,
+      },
+    };
   }
 }

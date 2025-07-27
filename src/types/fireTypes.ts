@@ -10,12 +10,17 @@ export interface Fire {
   medios_de_extincion: string;
   situacion_actual: string;
   tipo_y_has_de_superficie_afectada: string;
-  fecha_extinguido: unknown | null;
-  hora_extinguido: unknown | null;
-  codigo_municipio_ine: unknown | null;
-  nivel_maximo_alcanzado: unknown | null;
-  posicion: unknown | null;
+  fecha_extinguido: string | null;
+  hora_extinguido: string | null;
+  codigo_municipio_ine: string;
+  nivel_maximo_alcanzado: string;
+  posicion: Position;
   orden: string;
+}
+
+export interface Position {
+  lat: number;
+  lon: number;
 }
 
 export interface TotalPaginated<T> {
@@ -32,4 +37,11 @@ export enum FilteredFieldsEnum {
   PROBABLE_CAUSE = "causa_probable",
   CURRENT_STATUS = "situacion_actual",
   MAXIMUM_LEVEL = "nivel_maximo_alcanzado",
+}
+
+export interface FireNearby extends Fire {
+  distancia_desde_origen: {
+    type: "km" | "m";
+    value: number;
+  };
 }
