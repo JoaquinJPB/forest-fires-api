@@ -1,9 +1,9 @@
-import { FastifyInstance } from "fastify";
+import { FastifyPluginAsync } from "fastify";
 import { ConfigurationService } from "../services/configurationService";
 
-export default async function configurationsRoutes(fastify: FastifyInstance) {
+const configurationsRoutes: FastifyPluginAsync = async (fastify, options) => {
   const configurationService = new ConfigurationService();
-  fastify.post("/api/configurations", async (request, reply) => {
+  fastify.post("/", async (request, reply) => {
     const config = request.body as {
       userId: number;
       province?: string;
@@ -19,7 +19,7 @@ export default async function configurationsRoutes(fastify: FastifyInstance) {
   fastify.get<{
     Params: { userId: number };
   }>(
-    "/api/configurations/:userId",
+    "/:userId",
     {
       schema: {
         params: {
@@ -60,4 +60,6 @@ export default async function configurationsRoutes(fastify: FastifyInstance) {
       return reply.send(configs);
     }
   );
-}
+};
+
+export default configurationsRoutes;

@@ -7,7 +7,7 @@ const firesRoute: FastifyPluginAsync = async (fastify, options) => {
   fastify.get<{
     Querystring: { page?: number; limit?: number };
   }>(
-    "/api/fires",
+    "/",
     {
       schema: {
         querystring: {
@@ -38,7 +38,7 @@ const firesRoute: FastifyPluginAsync = async (fastify, options) => {
   fastify.get<{
     Querystring: { page?: number; limit?: number };
   }>(
-    "/api/fires/filtered",
+    "/filtered",
     {
       schema: {
         querystring: {
@@ -93,7 +93,7 @@ const firesRoute: FastifyPluginAsync = async (fastify, options) => {
   fastify.get<{
     Querystring: { radius: number; lat: number; lon: number; page?: number; limit?: number };
   }>(
-    "/api/fires/nearby",
+    "/nearby",
     {
       schema: {
         querystring: {
