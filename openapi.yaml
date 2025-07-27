@@ -1,0 +1,154 @@
+openapi: 3.0.3
+info:
+  title: Forest Fires API
+  version: 1.0.0
+  description: API for querying and managing forest fire data.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/fires:
+    get:
+      summary: List fires with pagination
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of items per page
+      responses:
+        "200":
+          description: A paginated list of fires
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Fire"
+                  total:
+                    type: integer
+  /api/fires/filtered:
+    get:
+      summary: List fires with filters
+      parameters:
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: region
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Filtered list of fires
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Fire"
+  /api/fires/nearby:
+    get:
+      summary: List fires near a location
+      parameters:
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: true
+        - in: query
+          name: lon
+          schema:
+            type: number
+          required: true
+        - in: query
+          name: radius
+          schema:
+            type: number
+          description: Radius in kilometers
+      responses:
+        "200":
+          description: List of nearby fires
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Fire"
+  /api/configurations:
+    post:
+      summary: Save user filter configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Configuration"
+      responses:
+        "201":
+          description: Configuration saved
+  /api/configurations/{userId}:
+    get:
+      summary: Get configurations for a user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of user configurations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Configuration"
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: API is healthy
+components:
+  schemas:
+    Fire:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        date:
+          type: string
+          format: date
+        region:
+          type: string
+    Configuration:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        filters:
+          type: object
