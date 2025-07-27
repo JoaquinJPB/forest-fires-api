@@ -16,7 +16,7 @@ paths:
             type: integer
           description: Page number
         - in: query
-          name: pageSize
+          name: limit
           schema:
             type: integer
           description: Number of items per page
@@ -28,28 +28,124 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Fire"
-                  total:
+                  code:
                     type: integer
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      page_size:
+                        type: integer
+                      total_current_page:
+                        type: integer
+                      results:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Fire"
+                      total_pages:
+                        type: integer
+                      total:
+                        type: integer
+              example:
+                code: 200
+                success: true
+                data:
+                  page: 1
+                  page_size: 3
+                  total_current_page: 3
+                  results:
+                    - fecha_del_parte: "2025-07-27"
+                      hora_del_parte: "19:00"
+                      provincia: ["PALENCIA"]
+                      causa_probable: "EN INVESTIGACION"
+                      termino_municipal: "POMAR DE VALDIVIA"
+                      nivel: "0"
+                      fecha_de_inicio: "2025-07-27"
+                      hora_de_inicio: "14:50"
+                      medios_de_extincion: "1 A.M.;1 HT-VILLAELES;1 ELIF;2 Autobombas;1 Cuadrillas de tierra;2 Dotación de Bomberos diputación;1 Guardia Civil"
+                      situacion_actual: "ACTIVO"
+                      tipo_y_has_de_superficie_afectada: "EN PERIMETRACION"
+                      fecha_extinguido: null
+                      hora_extinguido: null
+                      codigo_municipio_ine: "34135"
+                      nivel_maximo_alcanzado: "0"
+                      posicion:
+                        lon: -4.16749
+                        lat: 42.774579
+                      orden: "2025-07-27 19:00 PALENCIA"
+                    - fecha_del_parte: "2025-07-27"
+                      hora_del_parte: "19:00"
+                      provincia: ["SORIA"]
+                      causa_probable: "EN INVESTIGACION"
+                      termino_municipal: "TREVAGO"
+                      nivel: "0"
+                      fecha_de_inicio: "2025-07-27"
+                      hora_de_inicio: "18:31"
+                      medios_de_extincion: "2 A.M.;1 HT-GARRAY;1 ELIF;2 Autobombas;1 Cuadrillas de tierra"
+                      situacion_actual: "CONTROLADO"
+                      tipo_y_has_de_superficie_afectada: "EN PERIMETRACION"
+                      fecha_extinguido: null
+                      hora_extinguido: "18:52"
+                      codigo_municipio_ine: "42188"
+                      nivel_maximo_alcanzado: "0"
+                      posicion:
+                        lon: -2.102305
+                        lat: 41.873964
+                      orden: "2025-07-27 19:00 SORIA"
+                    - fecha_del_parte: "2025-07-27"
+                      hora_del_parte: "19:00"
+                      provincia: ["ZAMORA"]
+                      causa_probable: "EN INVESTIGACIÓN"
+                      termino_municipal: "PORTUGAL (PAISES DE LA UE)"
+                      nivel: null
+                      fecha_de_inicio: "2025-07-27"
+                      hora_de_inicio: "12:22"
+                      medios_de_extincion: "2 A.M.;1 HT-ROSINOS;1 ACT-ROSINOS;1 ELIF;1 Autobombas"
+                      situacion_actual: null
+                      tipo_y_has_de_superficie_afectada: null
+                      fecha_extinguido: null
+                      hora_extinguido: null
+                      codigo_municipio_ine: "95096"
+                      nivel_maximo_alcanzado: null
+                      posicion: null
+                      orden: "2025-07-27 19:00 ZAMORA"
+                  total_pages: 1385
+                  total: 4155
   /api/fires/filtered:
     get:
       summary: List fires with filters
       parameters:
         - in: query
-          name: startDate
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Number of items per page
+        - in: query
+          name: provincia
+          description: Filter by province
           schema:
             type: string
-            format: date
         - in: query
-          name: endDate
+          name: nivel_maximo_alcanzado
+          description: Filter by maximum level reached
           schema:
             type: string
-            format: date
         - in: query
-          name: region
+          name: situacion_actual
+          description: Filter by current situation
+          schema:
+            type: string
+        - in: query
+          name: causa_probable
+          description: Filter by probable cause
           schema:
             type: string
       responses:
@@ -61,10 +157,49 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Fire"
+              example:
+                code: 200
+                success: true
+                data:
+                  page: 1
+                  page_size: 100
+                  total_current_page: 100
+                  results:
+                    - fecha_del_parte: "2025-07-27"
+                      hora_del_parte: "19:00"
+                      provincia: ["BURGOS"]
+                      causa_probable: "ACCIDENTAL (FERROCARRIL)"
+                      termino_municipal: "AMEYUGO"
+                      nivel: "0"
+                      fecha_de_inicio: "2025-07-27"
+                      hora_de_inicio: "17:23"
+                      medios_de_extincion: "1 Técnicos;3 A.M.;1 HT-MEDINA DE POMAR;1 HOTEL;1 HT-PAIS VASCO;2 ACT-AGONCILLO;1 HT-PRADOLUENGO;2 ELIF;3 Autobombas;2 Cuadrillas de tierra;1 Guardia Civil;BB MIRANDA DE EBRO"
+                      situacion_actual: "ACTIVO"
+                      tipo_y_has_de_superficie_afectada: "EN PERIMETRACION"
+                      fecha_extinguido: null
+                      hora_extinguido: null
+                      codigo_municipio_ine: "09016"
+                      nivel_maximo_alcanzado: "0"
+                      posicion:
+                        lon: -3.061089
+                        lat: 42.656227
+                      orden: "2025-07-27 19:00 BURGOS"
+                  total_pages: 6
+                  total: 520
   /api/fires/nearby:
     get:
       summary: List fires near a location
       parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Number of items per page
         - in: query
           name: lat
           schema:
@@ -88,67 +223,208 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Fire"
-  /api/configurations:
-    post:
-      summary: Save user filter configuration
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Configuration"
-      responses:
-        "201":
-          description: Configuration saved
-  /api/configurations/{userId}:
-    get:
-      summary: Get configurations for a user
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: List of user configurations
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Configuration"
+                  $ref: "#/components/schemas/FireNearby"
+                example:
+                  code: 200
+                  success: true
+                  data:
+                    page: 1
+                    page_size: 1
+                    total_current_page: 1
+                    results:
+                      - fecha_del_parte: "2025-07-26"
+                        hora_del_parte: "19:00"
+                        provincia: ["LEÓN"]
+                        causa_probable: "ACCIDENTAL (FUMADORES)"
+                        termino_municipal: "CEMBRANOS(CHOZAS DE ABAJO)"
+                        nivel: "0"
+                        fecha_de_inicio: "2025-07-24"
+                        hora_de_inicio: "11:53"
+                        medios_de_extincion: "1 A.M."
+                        situacion_actual: "EXTINGUIDO"
+                        tipo_y_has_de_superficie_afectada: "FORESTAL:PASTO:0,01 HA. ;"
+                        fecha_extinguido: "2025-07-24"
+                        hora_extinguido: "12:50"
+                        codigo_municipio_ine: "24065"
+                        nivel_maximo_alcanzado: "0"
+                        posicion:
+                          lon: -5.687187
+                          lat: 42.506675
+                        orden: "2025-07-26 19:00 LEÓN"
+                        distancia_desde_origen:
+                          type: "km"
+                          value: 6.96
+                    total_pages: 54
+                    total: 54
   /health:
     get:
       summary: Health check
       responses:
         "200":
           description: API is healthy
+  /api/configuration:
+    post:
+      summary: Create or update user configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigurationInput"
+            example:
+              userId: 1
+              province: "ÁVILA"
+              status: "EXTINGUIDO"
+              probableCause: "INTENCIONADO"
+      responses:
+        "200":
+          description: Configuration created or updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Configuration"
+              example:
+                id: 7
+                userId: 1
+                province: "ÁVILA"
+                probableCause: "INTENCIONADO"
+                status: "EXTINGUIDO"
+                severity: null
+    get:
+      summary: Get user configuration
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: User configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Configuration"
+              example:
+                - id: 1
+                  userId: 1
+                  province: "BURGOS"
+                  probableCause: null
+                  status: null
+                  severity: null
+                - id: 2
+                  userId: 1
+                  province: "BURGOS"
+                  probableCause: null
+                  status: "EXTINGUIDO"
+                  severity: null
+                - id: 4
+                  userId: 1
+                  province: "BURGOS"
+                  probableCause: "INTENCIONADO"
+                  status: "EXTINGUIDO"
+                  severity: null
+                - id: 5
+                  userId: 1
+                  province: "ÁVILA"
+                  probableCause: "INTENCIONADO"
+                  status: "EXTINGUIDO"
+                  severity: null
 components:
   schemas:
     Fire:
       type: object
       properties:
-        id:
+        fecha_del_parte:
           type: string
-        name:
+        hora_del_parte:
           type: string
-        latitude:
-          type: number
-        longitude:
-          type: number
-        date:
+        provincia:
+          type: array
+          items:
+            type: string
+        causa_probable:
           type: string
-          format: date
-        region:
+        termino_municipal:
           type: string
+        nivel:
+          type: string
+          nullable: true
+        fecha_de_inicio:
+          type: string
+        hora_de_inicio:
+          type: string
+        medios_de_extincion:
+          type: string
+        situacion_actual:
+          type: string
+          nullable: true
+        tipo_y_has_de_superficie_afectada:
+          type: string
+          nullable: true
+        fecha_extinguido:
+          type: string
+          nullable: true
+        hora_extinguido:
+          type: string
+          nullable: true
+        codigo_municipio_ine:
+          type: string
+        nivel_maximo_alcanzado:
+          type: string
+          nullable: true
+        posicion:
+          type: object
+          nullable: true
+          properties:
+            lon:
+              type: number
+            lat:
+              type: number
+        orden:
+          type: string
+    FireNearby:
+        allOf:
+          - $ref: "#/components/schemas/Fire"
+          - type: object
+            properties:
+              distancia_desde_origen:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: "km"
+                  value:
+                    type: number
+    ConfigurationInput:
+      type: object
+      properties:
+        userId:
+          type: integer
+        province:
+          type: string
+        status:
+          type: string
+        probableCause:
+          type: string
+      required:
+        - userId
+        - province
+        - status
+        - probableCause
     Configuration:
       type: object
       properties:
         id:
-          type: string
+          type: integer
         userId:
+          type: integer
+        province:
           type: string
-        filters:
-          type: object
+        probableCause:
+          type: string
+        status:
+          type: string
+        severity:
+          type: string
+          nullable: true
