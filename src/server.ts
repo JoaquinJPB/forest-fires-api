@@ -9,7 +9,6 @@ const fastify = Fastify({
   logger: true,
 });
 
-// Load your openapi.yaml
 const openapiDoc = yaml.parse(fs.readFileSync("./openapi.yaml", "utf8"));
 
 const start = async () => {

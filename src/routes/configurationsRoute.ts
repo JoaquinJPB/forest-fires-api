@@ -25,7 +25,7 @@ const configurationsRoutes: FastifyPluginAsync = async (fastify, options) => {
         params: {
           type: "object",
           properties: {
-            userId: { type: "integer", minimum: 1 }, // valida que sea un entero positivo
+            userId: { type: "integer", minimum: 1 },
           },
           required: ["userId"],
         },

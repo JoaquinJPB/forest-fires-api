@@ -129,7 +129,6 @@ describe("FireService", () => {
   it("getNearbyFires returns the expected structure and caches the result.", async () => {
     (cache.get as jest.Mock).mockReturnValue(undefined);
 
-    // Parámetros de
     const radius = 1000;
     const lat = 42.56918;
     const lon = -5.682925;

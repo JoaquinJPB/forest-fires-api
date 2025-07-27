@@ -6,7 +6,6 @@ export default function allRoutes(fastify: FastifyInstance, opts: FastifyPluginO
   fastify.register(fireRoutes, { prefix: "/api/fires" });
   fastify.register(configurationRoutes, { prefix: "/api/configurations" });
 
-  // Ruta de salud
   fastify.get("/health", {
     schema: {
       tags: ["Sistema"],
