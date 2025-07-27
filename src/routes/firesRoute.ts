@@ -30,7 +30,8 @@ const firesRoute: FastifyPluginAsync = async (fastify, options) => {
     },
     async (request, reply) => {
       const { page, limit } = request.query;
-      return await fireService.getPaginatedFires(page as number, limit as number);
+      const fires = await fireService.getPaginatedFires(page as number, limit as number);
+      return reply.send(fires);
     }
   );
 
@@ -84,7 +85,8 @@ const firesRoute: FastifyPluginAsync = async (fastify, options) => {
     },
     async (request, reply) => {
       const { page, limit, ...rest } = request.query;
-      return await fireService.getFilteredPaginatedFires(page as number, limit as number, rest as Record<FilteredFieldsEnum, string>);
+      const filteredFires = await fireService.getFilteredPaginatedFires(page as number, limit as number, rest as Record<FilteredFieldsEnum, string>);
+      return reply.send(filteredFires);
     }
   );
 
@@ -129,7 +131,8 @@ const firesRoute: FastifyPluginAsync = async (fastify, options) => {
     },
     async (request, reply) => {
       const { radius, lat, lon, page, limit } = request.query;
-      return await fireService.getNearbyFires(radius as number, lat as number, lon as number, page as number, limit as number);
+      const nearbyFires = await fireService.getNearbyFires(radius as number, lat as number, lon as number, page as number, limit as number);
+      return reply.send(nearbyFires);
     }
   );
 };
