@@ -10,11 +10,7 @@ type GetPaginatedFiresResponse = Promise<ResponseTyped<TotalPaginated<Fire>>>;
 export class FireService {
   constructor(private fastify: FastifyInstance) {}
 
-  private async fetchPaginatedFires(
-    page: number,
-    limit: number,
-    whereConditions: string[]
-  ): GetPaginatedFiresResponse {
+  private async fetchPaginatedFires(page: number, limit: number, whereConditions: string[]): GetPaginatedFiresResponse {
     const offset = (page - 1) * limit;
     const params = new URLSearchParams();
     params.append("limit", `${limit}`);
@@ -61,6 +57,14 @@ export class FireService {
         whereConditions.push(`${key}='${value}'`);
       }
     });
+    return this.fetchPaginatedFires(page, limit, whereConditions);
+  }
+
+  async getNearbyFires(radius: number, lat: number, lon: number, page: number, limit: number): GetPaginatedFiresResponse {
+    const startDate = getTwoYearsAgoDate();
+    const radiusInMeters = radius * 1000;
+
+    const whereConditions = [`fecha_de_inicio>='${startDate}'`, `within_distance(posicion, geom'POINT(${lon} ${lat})', ${radiusInMeters})`];
     return this.fetchPaginatedFires(page, limit, whereConditions);
   }
 }

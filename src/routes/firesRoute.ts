@@ -87,5 +87,50 @@ const firesRoute: FastifyPluginAsync = async (fastify, options) => {
       return await fireService.getFilteredPaginatedFires(page as number, limit as number, rest as Record<FilteredFieldsEnum, string>);
     }
   );
+
+  fastify.get<{
+    Querystring: { radius: number; lat: number; lon: number; page?: number; limit?: number };
+  }>(
+    "/api/fires/nearby",
+    {
+      schema: {
+        querystring: {
+          type: "object",
+          required: ["radius", "lat", "lon"],
+          properties: {
+            radius: {
+              type: "number",
+              minimum: 1,
+            },
+            lat: {
+              type: "number",
+              minimum: -90,
+              maximum: 90,
+            },
+            lon: {
+              type: "number",
+              minimum: -180,
+              maximum: 180,
+            },
+            page: {
+              type: "integer",
+              minimum: 1,
+              default: 1,
+            },
+            limit: {
+              type: "integer",
+              minimum: 1,
+              maximum: 100,
+              default: 10,
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { radius, lat, lon, page, limit } = request.query;
+      return await fireService.getNearbyFires(radius as number, lat as number, lon as number, page as number, limit as number);
+    }
+  );
 };
 export default firesRoute;
