@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model FilterConfiguration {
+  id             Int     @id @default(autoincrement())
+  userId         Int
+  province       String?
+  probableCause  String?
+  status         String?
+  severity       String?
+}

@@ -1,11 +1,13 @@
 import Fastify from "fastify";
 import firesRoute from "./routes/firesRoute";
+import configurationsRoutes from "./routes/configurationsRoute";
 
 const fastify = Fastify({
   logger: true,
 });
 
 fastify.register(firesRoute, { prefix: "/" });
+fastify.register(configurationsRoutes, { prefix: "/" });
 
 const start = async () => {
   try {
