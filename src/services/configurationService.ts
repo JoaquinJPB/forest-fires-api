@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { cache } from "../cache";
 
 export class ConfigurationService {
   async saveConfiguration(config: { userId: number; province?: string; probableCause?: string; status?: string; severity?: string }) {
@@ -7,10 +8,18 @@ export class ConfigurationService {
     }
 
     const saved = await prisma.filterConfiguration.create({ data: config });
+
+    const cacheKey = `configurations:${config.userId}`;
+    cache.del(cacheKey);
+
     return saved;
   }
 
   async getConfigurationsByUserId(userId: number) {
+    const cacheKey = `configurations:${userId}`;
+    const cached = cache.get<(typeof prisma.filterConfiguration)[]>(cacheKey);
+    if (cached) return cached;
+
     const configs = await prisma.filterConfiguration.findMany({
       where: { userId },
     });
@@ -19,6 +28,7 @@ export class ConfigurationService {
       throw new Error("No configurations found");
     }
 
+    cache.set(cacheKey, configs, 60);
     return configs;
   }
 }
