@@ -1,4 +1,7 @@
 export function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  if (lat1 < -90 || lat1 > 90 || lon1 < -180 || lon1 > 180 || lat2 < -90 || lat2 > 90 || lon2 < -180 || lon2 > 180) {
+    throw new Error("Invalid coordinates");
+  }
   const earthRadiusKm = 6371;
   const degreesToRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
