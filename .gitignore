@@ -1,2 +1,7 @@
 node_modules/
 /src/generated/prisma
+dist/
+coverage/
+.env
+prisma/dev.db
+prisma/dev.db-journal
